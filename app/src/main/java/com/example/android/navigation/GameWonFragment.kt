@@ -16,12 +16,12 @@
 
 package com.example.android.navigation
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import com.example.android.navigation.databinding.FragmentGameWonBinding
 
 
@@ -31,6 +31,35 @@ class GameWonFragment : Fragment() {
         // Inflate the layout for this fragment
         val binding: FragmentGameWonBinding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_game_won, container, false)
+
+        var args = GameWonFragmentArgs.fromBundle(requireArguments())
+        setHasOptionsMenu(true)
+        binding.nextMatchButton.setOnClickListener(
+                Navigation.createNavigateOnClickListener(
+                        GameWonFragmentDirections.actionGameWonFragmentToGameFragment()
+                ))
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.winner_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.share) {
+            startActivity(getShareIntent())
+        }
+        return true;
+    }
+
+    private fun getShareIntent(): Intent {
+
+
+        val args = GameWonFragmentArgs.fromBundle(requireArguments())
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.setType("text/plain")
+        shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_success_text, args.numCorrect, args.numQuestions))
+
+        return shareIntent
     }
 }
